@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        tools:context=".MainActivity"
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:layout_height="match_parent">
+
+        <androidx.appcompat.widget.Toolbar
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            android:background="@color/colorPrimary"
+            android:id="@+id/toolbar">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="right"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:id="@+id/title"
+                android:layout_marginRight="5dp"/>
+        </androidx.appcompat.widget.Toolbar>
+       <LinearLayout
+           android:layout_width="match_parent"
+           android:layout_height="match_parent"
+           android:layout_below="@id/toolbar"
+           android:orientation="vertical">
+           <com.google.android.material.tabs.TabLayout
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:id="@+id/tab"
+               android:background="@color/colorPrimary"
+               app:tabMode="scrollable"
+               app:tabTextColor="@color/colorTab"
+               app:tabSelectedTextColor="@color/colorTab"
+               app:tabTextAppearance="@color/colorTab"
+               app:tabGravity="fill" />
+
+           <androidx.viewpager.widget.ViewPager
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:id="@+id/viewpager"/>
+       </LinearLayout>
+    <com.google.android.exoplayer2.ui.PlayerView
+        android:id="@+id/player"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:background="@color/colorTab"
+        app:hide_during_ads="false"
+        app:hide_on_touch="false"
+        app:show_buffering="when_playing"
+        app:show_timeout="0"
+        app:use_artwork="false"
+        android:visibility="gone"
+        app:shutter_background_color="@color/colorPlayer"
+        app:use_controller="true" />
+
+
+</RelativeLayout>
+

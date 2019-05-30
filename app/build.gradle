@@ -1,0 +1,68 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 28
+    defaultConfig {
+        applicationId "ir.aliprogramer.musicplayer"
+        minSdkVersion 21
+        targetSdkVersion 28
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        compileOptions {
+            targetCompatibility JavaVersion.VERSION_1_8
+        }
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = ["room.schemaLocation": "$projectDir/schemas".toString()]
+            }
+        }
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    def room_version = "1.1.1"
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation 'androidx.appcompat:appcompat:1.0.0'
+
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'androidx.test:runner:1.1.0'
+    implementation 'com.google.android.material:material:1.0.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0'
+    //implementation 'com.android.support:cardview-v7:28.0.0-alpha3'
+    //implementation 'com.android.support:recyclerview-v7:28.0.0-alpha3'
+
+    implementation 'com.google.android.exoplayer:exoplayer:2.10.1'
+
+    //implementation 'com.android.support:support-media-compat:28.0.0'
+   //implementation 'com.android.support:support-v4:28.0.0'
+
+    /*implementation 'com.google.android.exoplayer:exoplayer-core:2.+'
+    implementation 'com.google.android.exoplayer:exoplayer-dash:2.+'
+    implementation 'com.google.android.exoplayer:exoplayer-ui:2.+'*/
+
+    implementation 'de.hdodenhof:circleimageview:2.2.0'
+    implementation 'com.github.bumptech.glide:glide:4.7.1'
+
+    implementation 'androidx.room:room-runtime:2.0.0'
+    annotationProcessor 'androidx.room:room-compiler:2.0.0'
+
+    // optional - RxJava support for Room
+    implementation 'androidx.room:room-rxjava2:2.0.0'
+
+    // optional - Guava support for Room, including Optional and ListenableFuture
+    implementation 'androidx.room:room-guava:2.0.0'
+
+    // Test helpers
+    testImplementation 'androidx.room:room-testing:2.0.0'
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+
+}

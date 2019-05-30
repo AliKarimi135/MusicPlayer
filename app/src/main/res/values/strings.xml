@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">موزیک پلیر</string>
+    <string name="folder">پوشه ها </string>
+    <string name="play_list"> لیست پخش</string>
+    <string name="album">آلبوم ها </string>
+    <string name="music">آهنگ ها </string>
+    <string name="artist"> هنرمندان</string>
+    <string name="slash">آلبوم/</string>
+    <string name="track">آهنگ</string>
+</resources>

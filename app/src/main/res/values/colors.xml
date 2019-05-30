@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#25250E</color>
+    <color name="colorPrimaryDark">#25250E</color>
+    <color name="colorAccent">#FFFFFF</color>
+    <color name="colorBackground">#32331B</color>
+    <color name="colorTab">#FFFFFF</color>
+    <color name="transparent">#00000000</color>
+    <color name="album_color">#118D17</color>
+    <color name="colorPlayer">#A448B4</color>
+</resources>
