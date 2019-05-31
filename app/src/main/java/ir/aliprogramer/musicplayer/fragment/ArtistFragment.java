@@ -5,6 +5,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -25,7 +26,12 @@ public class ArtistFragment extends Fragment {
     RecyclerView recyclerView;
     ArtistAdapter artistAdapter;
     List<ArtistModel>artistList=new ArrayList<>();
+    FragmentManager manager;
     public ArtistFragment() {
+    }
+
+    public ArtistFragment(FragmentManager manager) {
+        this.manager = manager;
     }
 
     @Nullable
@@ -66,7 +72,7 @@ public class ArtistFragment extends Fragment {
             protected void onPostExecute(Integer result) {
                 super.onPostExecute(result);
                 //if(result==1){
-                    artistAdapter=new ArtistAdapter(artistList);
+                    artistAdapter=new ArtistAdapter(artistList,manager);
                     recyclerView.setAdapter(artistAdapter);
                 Log.d("artist",artistList.get(0).getName()+"");
                // }

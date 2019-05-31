@@ -5,6 +5,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -25,8 +26,12 @@ public class AlbumFragment extends Fragment {
     RecyclerView recyclerView;
     List<MusicModel> albumList=new ArrayList<>();
     AlbumAdapter albumAdapter;
-
+    FragmentManager manager;
     public AlbumFragment() {
+    }
+
+    public AlbumFragment(FragmentManager manager) {
+        this.manager=manager;
     }
 
     @Nullable
@@ -64,7 +69,7 @@ public class AlbumFragment extends Fragment {
             @Override
             protected void onPostExecute(Void aVoid) {
                 super.onPostExecute(aVoid);
-                albumAdapter=new AlbumAdapter(albumList);
+                albumAdapter=new AlbumAdapter(albumList,manager);
                 recyclerView.setAdapter(albumAdapter);
 
                 /*for(int i=0;i<albumList.size();i++){

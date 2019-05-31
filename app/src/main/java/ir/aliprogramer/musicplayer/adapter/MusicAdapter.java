@@ -61,13 +61,6 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.ViewHolder> 
         }else{
             viewHolder.image.setBackgroundColor(Color.GREEN);
         }
-       /* Bitmap bitmap=getAlbumImage(musiclist.get(i).getPath()+musiclist.get(i).getName());
-       if(bitmap==null){
-           viewHolder.image.setBackgroundColor(Color.GREEN);
-        }else{
-           Glide.with(context).load(bitmap).into(viewHolder.image);
-            //viewHolder.image.setImageBitmap(bitmap);
-        }*/
     }
 
     @Override

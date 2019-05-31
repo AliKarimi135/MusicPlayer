@@ -29,9 +29,19 @@ public interface  MusicDao {
 
 
    // @Query("SELECT a.* FROM musics a JOIN (SELECT album FROM musics GROUP BY albumId HAVING COUNT(albumId)>=1) b ON a.album=b.album ORDER BY artist ")
-   @Query("SELECT *  FROM musics GROUP BY albumId")
+   @Query("SELECT *  FROM musics GROUP BY albumId HAVING count(DISTINCT(albumId))>=1")
     List<MusicModel>getAllAlbum();
 
     @Query("SELECT id,artist,path,image,count(name) AS track,count(DISTINCT albumId) AS numberAlbum FROM musics GROUP BY artist ORDER BY artist")
     List<ArtistModel> getAllArtist();
+
+    @Query("SELECT *  FROM musics   WHERE path=:fpath")
+    List<MusicModel>getMusicListForFolder(String fpath);
+
+    @Query("SELECT *  FROM musics WHERE path=:fpath AND albumId=:albumid")
+    List<MusicModel>getMusicListForAlbum(String fpath,String albumid);
+
+    @Query("SELECT *  FROM musics WHERE artist=:artist")
+    List<MusicModel>getMusicListForArtist(String artist);
+
 }

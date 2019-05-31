@@ -1,7 +1,11 @@
 package ir.aliprogramer.musicplayer;
 
 import android.Manifest;
+import android.app.ActivityManager;
+import android.app.Service;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -20,6 +24,7 @@ import com.google.android.material.tabs.TabLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentManager;
 import androidx.viewpager.widget.ViewPager;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -27,6 +32,8 @@ import android.os.Bundle;
 import androidx.appcompat.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -67,19 +74,12 @@ public class MainActivity extends AppCompatActivity {
     ArtistFragment artistFragment;
     PlayerView playerView;
     ExoPlayer exoPlayer;
+    FrameLayout frameLayout;
+    LinearLayout container;
+    MusicPlayerService playerService=new MusicPlayerService();
 
-    // autoplay = false
-    private boolean autoPlay = false;
-
-    // used to remember the playback position
-    private int currentWindow;
-    private long playbackPosition;
-     String pathUrl;
-    // constant fields for saving and restoring bundle
-    public static final String AUTOPLAY = "autoplay";
-    public static final String CURRENT_WINDOW_INDEX = "current_window_index";
-    public static final String PLAYBACK_POSITION = "playback_position";
-
+    static MainActivity instance;
+    FragmentManager manager;
     android.media.MediaMetadataRetriever mmr = new MediaMetadataRetriever();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,24 +89,23 @@ public class MainActivity extends AppCompatActivity {
         title=toolbar.findViewById(R.id.title);
         title.setText(getString(R.string.app_name));
         setSupportActionBar(toolbar);
+        instance=this;
 
-        if (savedInstanceState != null) {
-            playbackPosition = savedInstanceState.getLong(PLAYBACK_POSITION, 0);
-            currentWindow = savedInstanceState.getInt(CURRENT_WINDOW_INDEX, 0);
-            autoPlay = savedInstanceState.getBoolean(AUTOPLAY, false);
-            pathUrl=savedInstanceState.getString("pathUrl");
-        }
-       
+        frameLayout=findViewById(R.id.frame_layout);
+        container=findViewById(R.id.container);
+
 
         tabLayout=findViewById(R.id.tab);
         viewPager=findViewById(R.id.viewpager);
 
         viewPagerAdapter=new ViewPagerAdapter(getSupportFragmentManager());
 
+        manager=getSupportFragmentManager();
+
         musicFragment=new MusicFragment();
-        folderFragment=new FolderFragment();
-        albumFragment=new AlbumFragment();
-        artistFragment=new ArtistFragment();
+        folderFragment=new FolderFragment(manager);
+        albumFragment=new AlbumFragment(manager);
+        artistFragment=new ArtistFragment(manager);
         viewPagerAdapter.addFragment(folderFragment,getString(R.string.folder));
         viewPagerAdapter.addFragment(musicFragment,getString(R.string.music));
         viewPagerAdapter.addFragment(albumFragment,getString(R.string.album));
@@ -121,7 +120,36 @@ public class MainActivity extends AppCompatActivity {
             checkPermition();
         }
         playerView=findViewById(R.id.player);
-        initializePlayer();
+    }
+
+    @Override
+    public void onBackPressed() {
+        Log.d("numberStack",manager.getBackStackEntryCount()+"");
+        if(manager.getBackStackEntryCount()>0){
+            container.setVisibility(View.VISIBLE);
+            frameLayout.setVisibility(View.GONE);
+            title.setText(getString(R.string.app_name));
+        }else{
+            exoPlayer.release();
+            super.onBackPressed();
+        }
+
+    }
+
+    public void showFrameLayout(String title2){
+        frameLayout.setVisibility(View.VISIBLE);
+        container.setVisibility(View.GONE);
+        title.setText(title2);
+    }
+    private boolean isServiceRunning(MusicPlayerService serviceClass) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getClass().equals(service.service.getClass())) {
+                playerService=serviceClass;
+                return true;
+            }
+        }
+        return false;
     }
 
     private void initializePlayer() {
@@ -129,53 +157,21 @@ public class MainActivity extends AppCompatActivity {
                                                         new DefaultTrackSelector(), new DefaultLoadControl());
 
     }
-
     public void play(String path){
-        pathUrl=path;
-        DataSpec dataSpec = new DataSpec(Uri.parse(path));
-        final FileDataSource fileDataSource = new FileDataSource();
-        try {
-            fileDataSource.open(dataSpec);
-        } catch (FileDataSource.FileDataSourceException e) {
-            e.printStackTrace();
-        }
         playerView.setVisibility(View.VISIBLE);
-        DataSource.Factory factory = new DataSource.Factory() {
-            @Override
-            public DataSource createDataSource() {
-                return fileDataSource;
-            }
-        };
-        MediaSource audioSource = new ExtractorMediaSource(fileDataSource.getUri(),
-                factory, new DefaultExtractorsFactory(), null, null);
-        exoPlayer.prepare(audioSource);
-        Log.d("play",path);
 
-        exoPlayer.setPlayWhenReady(autoPlay);
-        playerView.setPlayer(exoPlayer);
-        exoPlayer.seekTo(currentWindow, playbackPosition);
-       // exoPlayer.release();
-    }
-    public void releasePlayer( ) {
-        if (exoPlayer != null) {
-            playbackPosition = exoPlayer.getCurrentPosition();
-            currentWindow = exoPlayer.getCurrentWindowIndex();
-            autoPlay = exoPlayer.getPlayWhenReady();
-            exoPlayer.release();
-            exoPlayer=null;
-        }
+        Intent serviceIntent = new Intent(this,playerService.getClass());
+        serviceIntent.putExtra("path", path);
+
+        this.startService(serviceIntent);
+
     }
 
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        if (exoPlayer == null) {
-            outState.putLong(PLAYBACK_POSITION, playbackPosition);
-            outState.putInt(CURRENT_WINDOW_INDEX, currentWindow);
-            outState.putBoolean(AUTOPLAY, autoPlay);
-            outState.putString("pathUrl",pathUrl);
-        }
+    public void setPlayer(ExoPlayer exoPlayer1){
+        exoPlayer=exoPlayer1;
+        playerView.setPlayer(exoPlayer1);
     }
+
 
     public void checkPermition(){
     String[] PERMISSIONS = {Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};

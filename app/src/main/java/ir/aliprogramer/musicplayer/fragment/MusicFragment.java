@@ -8,6 +8,8 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +17,7 @@ import android.view.ViewGroup;
 import java.util.ArrayList;
 import java.util.List;
 
+import ir.aliprogramer.musicplayer.MainActivity;
 import ir.aliprogramer.musicplayer.R;
 import ir.aliprogramer.musicplayer.adapter.MusicAdapter;
 import ir.aliprogramer.musicplayer.database.AppDataBase;
@@ -26,10 +29,18 @@ public class MusicFragment extends Fragment {
     RecyclerView recyclerView;
     List<MusicModel> musicList=new ArrayList<>();
     MusicAdapter musicAdapter;
-
+    boolean initList=true;
+    int status=0;
+    int end;
+    String title;
     public MusicFragment( ) {
     }
-
+    public MusicFragment(List<MusicModel> musicList,int status) {
+        this.musicList=musicList;
+        Log.d("list2",musicList.size()+"");
+        initList=false;
+        this.status=status;
+    }
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -45,18 +56,34 @@ public class MusicFragment extends Fragment {
         recyclerView.setLayoutManager(layoutManager);
         DividerItemDecoration dividerItemDecoration=new DividerItemDecoration(getContext(),new LinearLayoutManager(recyclerView.getContext()).getOrientation());
         recyclerView.addItemDecoration(dividerItemDecoration);
-
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        if(initList)
+            LoadDataFromDb();
+        else {
+            //set title toolbar
+            if(status==1){
+                title=musicList.get(0).getPath();
+                end=title.lastIndexOf('/');
+                title=title.substring(end+1,musicList.get(0).getPath().length());
+            }else if(status==2){
+                title=musicList.get(0).getAlbum();
+            }else {
+                title=musicList.get(0).getArtist();
+             }
+            ((MainActivity) getContext()).showFrameLayout(title);
+            musicAdapter=new MusicAdapter(musicList);
+            recyclerView.setAdapter(musicAdapter);
 
-
-        LoadDataFromDb();
+            Log.d("list22",musicList.size()+"");
+        }
 
     }
     public void LoadDataFromDb(){
+
         class getData extends AsyncTask<Void,Void,Void> {
 
             @Override

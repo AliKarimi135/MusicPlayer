@@ -5,11 +5,16 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaMetadataRetriever;
 import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.os.AsyncTask;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 
@@ -18,15 +23,21 @@ import java.util.List;
 import de.hdodenhof.circleimageview.CircleImageView;
 import ir.aliprogramer.musicplayer.ImageSaver;
 import ir.aliprogramer.musicplayer.R;
+import ir.aliprogramer.musicplayer.database.AppDataBase;
 import ir.aliprogramer.musicplayer.database.model.MusicModel;
+import ir.aliprogramer.musicplayer.fragment.MusicFragment;
 
 public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.ViewHolder> {
     List<MusicModel> albumList;
     Context context;
     String albumName,Artist,imagePath;
     ImageSaver imageSaver;
-    public AlbumAdapter(List<MusicModel> albumList) {
+    List<MusicModel>musicList;
+    FragmentManager manager;
+
+    public AlbumAdapter(List<MusicModel> albumList, FragmentManager manager) {
         this.albumList = albumList;
+        this.manager=manager;
     }
 
     @NonNull
@@ -52,17 +63,7 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.ViewHolder> 
         if(!imagePath.equals("no")) {
             Bitmap bitmap = imageSaver.setFileName(imagePath).load();
             Glide.with(context).load(bitmap).into(viewHolder.image);
-        }else{
-           // viewHolder.image.setBackgroundColor(Color.GREEN);
         }
-        /*Bitmap bitmap=getAlbumImage(albumList.get(i).getPath()+albumList.get(i).getName());
-        if(bitmap==null){
-            //Glide.with(context).load(R.drawable.defult).into(viewHolder.image);
-          //  viewHolder.image.setImageResource(R.drawable.defult);
-        }else{
-            Glide.with(context).load(bitmap).into(viewHolder.image);
-            //viewHolder.image.setImageBitmap(bitmap);
-        }*/
     }
 
     @Override
@@ -70,7 +71,7 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.ViewHolder> 
         return albumList.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         CircleImageView image;
         TextView album,artist;
         public ViewHolder(@NonNull View itemView) {
@@ -78,21 +79,44 @@ public class AlbumAdapter extends RecyclerView.Adapter<AlbumAdapter.ViewHolder> 
             image=itemView.findViewById(R.id.album_img);
             album=itemView.findViewById(R.id.album_name);
             artist=itemView.findViewById(R.id.album_artist);
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View view) {
+            getMusicListForAlbum(albumList.get(getAdapterPosition()).getPath(),albumList.get(getAdapterPosition()).getAlbumId());
+
         }
     }
-    private Bitmap getAlbumImage(String path) {
-        android.media.MediaMetadataRetriever mmr = new MediaMetadataRetriever();
-        byte[] data;
-        try {
-            mmr.setDataSource(path);
-            data = mmr.getEmbeddedPicture();
-        }catch (Exception e){
-            data=null;
+
+    private void getMusicListForAlbum(final String path,final String albumId) {
+        class getMusicListForAlbum extends AsyncTask<Void,Void,Integer> {
+
+            @Override
+            protected Integer doInBackground(Void... voids) {
+                musicList= AppDataBase.getInstance(context).dao().getMusicListForAlbum(path,albumId);
+                if(musicList==null)
+                    return 0;
+                return 1;
+            }
+
+            @Override
+            protected void onPostExecute(Integer result) {
+                super.onPostExecute(result);
+                if(result==0){
+                    Toast.makeText(context,"در این آلبوم موزیکی وجود ندارد",Toast.LENGTH_LONG).show();
+                }else{
+                    MusicFragment musicFragment=new MusicFragment(musicList,2);
+                    FragmentTransaction transaction=manager.beginTransaction();
+                    //transaction.show(musicFragment);
+                    transaction.add(R.id.frame_layout,musicFragment,"musicFragment3");
+                    transaction.addToBackStack("musicFragment3");
+                    transaction.commit();
+                }
+            }
         }
-        if (data != null){
-            return Bitmap.createScaledBitmap(BitmapFactory.decodeByteArray(data, 0, data.length),
-                    200, 200, false);
-        }
-        return null;
+        getMusicListForAlbum listByPath=new getMusicListForAlbum();
+        listByPath.execute();
     }
-}
+    }
+

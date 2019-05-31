@@ -5,6 +5,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -26,7 +27,9 @@ public class FolderFragment extends Fragment {
     RecyclerView recyclerView;
     List<FolderModel> folderList=new ArrayList<>();
     FolderAdapter folderAdapter;
-    public FolderFragment() {
+    FragmentManager manager;
+    public FolderFragment(FragmentManager manager) {
+        this.manager=manager;
     }
 
     @Nullable
@@ -64,7 +67,7 @@ public class FolderFragment extends Fragment {
             @Override
             protected void onPostExecute(Void aVoid) {
                 super.onPostExecute(aVoid);
-                folderAdapter=new FolderAdapter(folderList);
+                folderAdapter=new FolderAdapter(folderList,manager);
                 recyclerView.setAdapter(folderAdapter);
             }
         }
