@@ -45,7 +45,10 @@ public class MusicPlayerService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        if(intent==null)
+            return START_STICKY;
         path=intent.getStringExtra("path");
+
         Log.d("service",path);
         DataSpec dataSpec = new DataSpec(Uri.parse(path));
         final FileDataSource fileDataSource = new FileDataSource();

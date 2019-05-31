@@ -1,14 +1,17 @@
 package ir.aliprogramer.musicplayer.database;
 
 import androidx.room.Dao;
+import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
+import androidx.room.Update;
 
 import java.util.List;
 
 import ir.aliprogramer.musicplayer.database.model.ArtistModel;
 import ir.aliprogramer.musicplayer.database.model.FolderModel;
 import ir.aliprogramer.musicplayer.database.model.MusicModel;
+import ir.aliprogramer.musicplayer.database.model.PlayListModel;
 
 @Dao
 public interface  MusicDao {
@@ -44,4 +47,15 @@ public interface  MusicDao {
     @Query("SELECT *  FROM musics WHERE artist=:artist")
     List<MusicModel>getMusicListForArtist(String artist);
 
+    @Insert
+    void addToPlayList(PlayListModel playListModel);
+    @Query("UPDATE playlist SET position = :pos WHERE musicId=:mid")
+    void updatePlayList(int mid,int pos);
+    @Query("DELETE FROM playlist WHERE musicId=:mid")
+    void deletePlayList(int mid);
+    //@Query("SELECT * FROM musics WHERE id IN (SELECT musicId FROM playlist)")
+    @Query("SELECT m.*,p.position FROM musics m,playlist p WHERE m.id =p.musicId ORDER BY position ASC")
+    List<MusicModel>getAllPlayList();
+    @Query("SELECT * FROM playlist ORDER BY position DESC")
+    List<PlayListModel>getAllPlayList2();
 }

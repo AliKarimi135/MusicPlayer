@@ -8,6 +8,8 @@ import android.media.MediaMetadataRetriever;
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.os.AsyncTask;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,8 +22,10 @@ import java.util.List;
 
 import ir.aliprogramer.musicplayer.ImageSaver;
 import ir.aliprogramer.musicplayer.MainActivity;
+import ir.aliprogramer.musicplayer.database.AppDataBase;
 import ir.aliprogramer.musicplayer.database.model.MusicModel;
 import ir.aliprogramer.musicplayer.R;
+import ir.aliprogramer.musicplayer.database.model.PlayListModel;
 
 public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.ViewHolder> {
 
@@ -82,17 +86,21 @@ public class MusicAdapter extends RecyclerView.Adapter<MusicAdapter.ViewHolder> 
         @Override
         public void onClick(View view) {
             Log.d("play1",musiclist.get(getAdapterPosition()).getPath());
+            PlayListModel playListModel=new PlayListModel(musiclist.get(getAdapterPosition()).getId(),0);
+            addPlayList(playListModel);
             ((MainActivity)context).play(musiclist.get(getAdapterPosition()).getPath()+musiclist.get(getAdapterPosition()).getName());
         }
     }
-    private Bitmap getAlbumImage(String path) {
-        android.media.MediaMetadataRetriever mmr = new MediaMetadataRetriever();
-        mmr.setDataSource(path);
-        byte[] data = mmr.getEmbeddedPicture();
-        if (data != null){
-            return Bitmap.createScaledBitmap(BitmapFactory.decodeByteArray(data, 0, data.length),
-                    55, 55, false);
+   public void addPlayList(final PlayListModel playListModel){
+        class  AddPlayList extends AsyncTask<Void,Void,Void> {
+
+            @Override
+            protected Void doInBackground(Void... voids) {
+                AppDataBase.getInstance(context).dao().addToPlayList(playListModel);
+                return null;
+            }
         }
-        return null;
-    }
+        AddPlayList addPlayList=new AddPlayList();
+        addPlayList.execute();
+   }
 }

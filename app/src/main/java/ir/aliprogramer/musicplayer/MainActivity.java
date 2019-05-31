@@ -58,6 +58,7 @@ import ir.aliprogramer.musicplayer.fragment.AlbumFragment;
 import ir.aliprogramer.musicplayer.fragment.ArtistFragment;
 import ir.aliprogramer.musicplayer.fragment.FolderFragment;
 import ir.aliprogramer.musicplayer.fragment.MusicFragment;
+import ir.aliprogramer.musicplayer.fragment.PlayListFragment;
 
 public class MainActivity extends AppCompatActivity {
     AppPreferenceTools appPreferenceTools;
@@ -72,10 +73,12 @@ public class MainActivity extends AppCompatActivity {
     FolderFragment folderFragment;
     AlbumFragment albumFragment;
     ArtistFragment artistFragment;
+    PlayListFragment playListFragment;
     PlayerView playerView;
     ExoPlayer exoPlayer;
     FrameLayout frameLayout;
     LinearLayout container;
+    String pathMusic;
     MusicPlayerService playerService=new MusicPlayerService();
 
     static MainActivity instance;
@@ -106,11 +109,12 @@ public class MainActivity extends AppCompatActivity {
         folderFragment=new FolderFragment(manager);
         albumFragment=new AlbumFragment(manager);
         artistFragment=new ArtistFragment(manager);
+        playListFragment=new PlayListFragment();
         viewPagerAdapter.addFragment(folderFragment,getString(R.string.folder));
         viewPagerAdapter.addFragment(musicFragment,getString(R.string.music));
         viewPagerAdapter.addFragment(albumFragment,getString(R.string.album));
         viewPagerAdapter.addFragment(artistFragment,getString(R.string.artist));
-        viewPagerAdapter.addFragment(new Fragment(),getString(R.string.play_list));
+        viewPagerAdapter.addFragment(playListFragment,getString(R.string.play_list));
         viewPager.setAdapter(viewPagerAdapter);
         tabLayout.setupWithViewPager(viewPager);
 
@@ -119,6 +123,9 @@ public class MainActivity extends AppCompatActivity {
             appPreferenceTools.setFirstSetup(true);
             checkPermition();
         }
+        if(savedInstanceState!=null)
+            pathMusic=savedInstanceState.getString("pathService");
+
         playerView=findViewById(R.id.player);
     }
 
@@ -131,6 +138,7 @@ public class MainActivity extends AppCompatActivity {
             title.setText(getString(R.string.app_name));
         }else{
             exoPlayer.release();
+            this.finish();
             super.onBackPressed();
         }
 
@@ -159,9 +167,9 @@ public class MainActivity extends AppCompatActivity {
     }
     public void play(String path){
         playerView.setVisibility(View.VISIBLE);
-
+        pathMusic=path;
         Intent serviceIntent = new Intent(this,playerService.getClass());
-        serviceIntent.putExtra("path", path);
+        serviceIntent.putExtra("path", pathMusic);
 
         this.startService(serviceIntent);
 
@@ -335,6 +343,10 @@ public class MainActivity extends AppCompatActivity {
         musicTask.execute();
     }
 
-
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString("pathService",pathMusic);
+    }
 }
 
