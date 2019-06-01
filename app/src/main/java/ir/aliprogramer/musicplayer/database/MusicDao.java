@@ -11,6 +11,7 @@ import java.util.List;
 import ir.aliprogramer.musicplayer.database.model.ArtistModel;
 import ir.aliprogramer.musicplayer.database.model.FolderModel;
 import ir.aliprogramer.musicplayer.database.model.MusicModel;
+import ir.aliprogramer.musicplayer.database.model.MusicModel2;
 import ir.aliprogramer.musicplayer.database.model.PlayListModel;
 
 @Dao
@@ -54,8 +55,8 @@ public interface  MusicDao {
     @Query("DELETE FROM playlist WHERE musicId=:mid")
     void deletePlayList(int mid);
     //@Query("SELECT * FROM musics WHERE id IN (SELECT musicId FROM playlist)")
-    @Query("SELECT m.*,p.position FROM musics m,playlist p WHERE m.id =p.musicId ORDER BY position ASC")
-    List<MusicModel>getAllPlayList();
+    @Query("SELECT m.*,p.position FROM musics m,playlist p WHERE m.id =p.musicId ORDER BY p.position ASC")
+    List<MusicModel2>getAllPlayList();
     @Query("SELECT * FROM playlist ORDER BY position DESC")
     List<PlayListModel>getAllPlayList2();
 }

@@ -16,6 +16,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import ir.aliprogramer.musicplayer.MainActivity;
@@ -24,13 +26,14 @@ import ir.aliprogramer.musicplayer.adapter.MusicAdapter;
 import ir.aliprogramer.musicplayer.adapter.PlayListAdapter;
 import ir.aliprogramer.musicplayer.database.AppDataBase;
 import ir.aliprogramer.musicplayer.database.model.MusicModel;
+import ir.aliprogramer.musicplayer.database.model.MusicModel2;
 import ir.aliprogramer.musicplayer.database.model.PlayListModel;
 import ir.aliprogramer.musicplayer.touchHelper.EditItemTouchHelperCallback;
 import ir.aliprogramer.musicplayer.touchHelper.OnStartDragListener;
 
 public class PlayListFragment extends Fragment implements OnStartDragListener {
     RecyclerView recyclerView;
-    List<MusicModel> musicList=new ArrayList<>();
+    List<MusicModel2> musicList2=new ArrayList<>();
     PlayListAdapter playListAdapter;
     ItemTouchHelper mItemTouchHelper;
 
@@ -38,8 +41,8 @@ public class PlayListFragment extends Fragment implements OnStartDragListener {
 
     }
 
-    public PlayListFragment(List<MusicModel> musicList) {
-        this.musicList = musicList;
+    public PlayListFragment(List<MusicModel2> musicList) {
+        this.musicList2 = musicList;
     }
     @Nullable
     @Override
@@ -70,8 +73,8 @@ public class PlayListFragment extends Fragment implements OnStartDragListener {
 
             @Override
             protected Void doInBackground(Void... voids) {
-                musicList= AppDataBase.getInstance(getContext()).dao().getAllPlayList();
-                load();
+                musicList2= AppDataBase.getInstance(getContext()).dao().getAllPlayList();
+                //List<PlayListModel>playList= AppDataBase.getInstance(getContext()).dao().getAllPlayList2();
                 return null;
             }
 
@@ -86,11 +89,12 @@ public class PlayListFragment extends Fragment implements OnStartDragListener {
         data.execute();
     }
     public void load(){
-        playListAdapter=new PlayListAdapter(musicList,this);
-        ItemTouchHelper.Callback callback=new EditItemTouchHelperCallback(playListAdapter);
-        mItemTouchHelper = new ItemTouchHelper(callback);
-        mItemTouchHelper.attachToRecyclerView(recyclerView);
-        recyclerView.setAdapter(playListAdapter);
+            playListAdapter = new PlayListAdapter(musicList2, this);
+            ItemTouchHelper.Callback callback = new EditItemTouchHelperCallback(playListAdapter);
+            mItemTouchHelper = new ItemTouchHelper(callback);
+            mItemTouchHelper.attachToRecyclerView(recyclerView);
+            recyclerView.setAdapter(playListAdapter);
+
     }
     @Override
     public void onStartDrag(RecyclerView.ViewHolder viewHolder) {

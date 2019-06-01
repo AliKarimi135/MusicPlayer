@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
     String pathMusic;
     MusicPlayerService playerService=new MusicPlayerService();
 
-    static MainActivity instance;
+    public static MainActivity instance;
     FragmentManager manager;
     android.media.MediaMetadataRetriever mmr = new MediaMetadataRetriever();
     @Override
@@ -137,10 +137,12 @@ public class MainActivity extends AppCompatActivity {
             frameLayout.setVisibility(View.GONE);
             title.setText(getString(R.string.app_name));
         }else{
-            exoPlayer.release();
+           // exoPlayer.release();
+            Intent serviceIntent = new Intent(this,playerService.getClass());
+            this.stopService(serviceIntent);
             this.finish();
-            super.onBackPressed();
         }
+        super.onBackPressed();
 
     }
 

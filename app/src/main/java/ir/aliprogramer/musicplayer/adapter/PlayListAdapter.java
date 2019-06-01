@@ -28,13 +28,14 @@ import ir.aliprogramer.musicplayer.MainActivity;
 import ir.aliprogramer.musicplayer.R;
 import ir.aliprogramer.musicplayer.database.AppDataBase;
 import ir.aliprogramer.musicplayer.database.model.MusicModel;
+import ir.aliprogramer.musicplayer.database.model.MusicModel2;
 import ir.aliprogramer.musicplayer.database.model.PlayListModel;
 import ir.aliprogramer.musicplayer.touchHelper.ItemTouchHelperAdapter;
 import ir.aliprogramer.musicplayer.touchHelper.ItemTouchHelperViewHolder;
 import ir.aliprogramer.musicplayer.touchHelper.OnStartDragListener;
 
 public class PlayListAdapter extends RecyclerView.Adapter<PlayListAdapter.ViewHolder> implements ItemTouchHelperAdapter {
-    List<MusicModel> musiclist;
+    List<MusicModel2> musiclist;
     Context context;
     String title,Artist,imagePath;
     ImageSaver imageSaver;
@@ -43,7 +44,7 @@ public class PlayListAdapter extends RecyclerView.Adapter<PlayListAdapter.ViewHo
 
     private final OnStartDragListener mDragStartListener;
 
-    public PlayListAdapter(List<MusicModel> musiclist, OnStartDragListener mDragStartListener) {
+    public PlayListAdapter(List<MusicModel2> musiclist, OnStartDragListener mDragStartListener) {
         this.musiclist = musiclist;
         this.mDragStartListener = mDragStartListener;
     }
@@ -78,7 +79,7 @@ public class PlayListAdapter extends RecyclerView.Adapter<PlayListAdapter.ViewHo
         }else{
             holder.image.setBackgroundColor(Color.GREEN);
         }
-    holder.artist.setOnTouchListener(new View.OnTouchListener() {
+    holder.name.setOnTouchListener(new View.OnTouchListener() {
         @Override
         public boolean onTouch(View view, MotionEvent motionEvent) {
             if (MotionEventCompat.getActionMasked(motionEvent) == MotionEvent.ACTION_DOWN) {
@@ -192,7 +193,7 @@ public class PlayListAdapter extends RecyclerView.Adapter<PlayListAdapter.ViewHo
         DeleteItemInDB deleteItemInDB=new DeleteItemInDB();
         deleteItemInDB.execute();
     }
-    public void updateList(List<MusicModel> list) {
+    public void updateList(List<MusicModel2> list) {
         musiclist = list;
         notifyDataSetChanged();
     }

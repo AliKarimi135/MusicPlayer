@@ -45,20 +45,20 @@
                app:tabSelectedTextColor="@color/colorTab"
                app:tabTextAppearance="@color/colorTab"
                app:tabGravity="fill" />
+              <androidx.viewpager.widget.ViewPager
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:id="@+id/viewpager" />
 
-           <androidx.viewpager.widget.ViewPager
-               android:layout_width="match_parent"
-               android:layout_height="match_parent"
-               android:id="@+id/viewpager"/>
-       </LinearLayout>
+         </LinearLayout>
 
         <com.google.android.exoplayer2.ui.PlayerView
             android:id="@+id/player"
             android:layout_width="match_parent"
-            android:layout_height="70dp"
+            android:layout_height="@dimen/player_height"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
-            android:background="@color/colorTab"
+           
             app:hide_during_ads="true"
             app:hide_on_touch="false"
             app:show_buffering="when_playing"
@@ -68,10 +68,6 @@
             android:visibility="gone"
             app:shutter_background_color="@color/colorPlayer"
             app:use_controller="true" />
-
-
-
-
 
 </RelativeLayout>
 
